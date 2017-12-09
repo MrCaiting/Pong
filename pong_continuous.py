@@ -164,13 +164,15 @@ def to_discrete(curr_state):
 
 
 def random_speed():
-    mag = True
-    while(mag):
-        u = random.random() * 0.015 * 2 - 0.015
-        if abs(u) > 0.03:
-            mag = False
-    v = random.random() * 0.03 * 2 - 0.03
-    return u, v
+    offset_x = random.uniform(-0.015, 0.015)
+    offset_y = random.uniform(-0.03, 0.03)
+    if offset_x > 0:
+        u = 0.03 + offset_x
+    else:
+        u = -0.03 + offset_x
+
+    return u, offset_y
+
 
 def Qlearning(QLearn_Dict, action_counter, state, prev_state, prev_action):
     Q_state = to_discrete(state)

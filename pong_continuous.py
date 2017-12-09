@@ -4,12 +4,12 @@ import random
 # state = (ball_x, ball_y, velocity_x, velocity_y, l_paddle_y, r_paddle_y)
 # action = ([l_up, l_down, l_stay], [r_up, r_down, r_stay])
 
-HEIGHT = 12
-WIDTH = 12
-LP_HEIGHT = 0.2
+HEIGHT = 36
+WIDTH = 36
+LP_HEIGHT = 1
 LP_STEP = 0
 # Since there is jut a single paddle, we initialize this one as if it is a wall
-RP_HEIGHT = 1.0
+RP_HEIGHT = 0.2
 RP_STEP = 0.04
 LEFT_BOUND = 0
 RIGHT_BOUND = 1
@@ -31,6 +31,7 @@ def is_bounced(prev_state, curr_state):
         if curr_state[2] > 0:
             return True
     return False
+
 
 
 # declare reward state
@@ -89,7 +90,7 @@ def action_state(curr_state, action):
     ball_y_new = ball_y + velocity_y
 
     # we need to discretize the ball position in order to prevent out-of-bound situation
-    dis_ball_x = math.floor(ball_x_new * WIDTH / 1) / WIDTH
+    dis_ball_x = math.floor(ball_x_new * WIDTH) / WIDTH
 
     # lets bounce now!
     # reverse the direction and velocity if touch the bound
@@ -120,7 +121,6 @@ def action_state(curr_state, action):
 
 def terminate_state(state):
     """terminate_state.
-
     Function used to chekc if the state is terminated
     """
     # Upacking each element from the state tuple
@@ -129,17 +129,17 @@ def terminate_state(state):
     # For the first player:
     #   if the ball has pass the right bound and it is going right
     if ball_x > RIGHT_BOUND and velocity_x > 0:
-        return False
+        return True
     if ball_x < LEFT_BOUND and velocity_x < 0:
-        return False
-    return True
+        return True
+    return False
 
 
 # we need to convert the continuous game state into discrete
 def to_discrete(curr_state):
     ball_x, ball_y, velocity_x, velocity_y, l_paddle_y, r_paddle_y = curr_state
-    ball_x = math.floor(WIDTH * ball_x / 1) /WIDTH
-    ball_y = math.floor(HEIGHT * ball_y / 1) /HEIGHT
+    ball_x = math.floor(WIDTH * ball_x) /WIDTH
+    ball_y = math.floor(HEIGHT * ball_y) /HEIGHT
     # set the speed to discretized speed
     vx_new = DIS_V_X
     vy_new = DIS_V_Y
@@ -179,35 +179,35 @@ def Qlearning(QLearn_Dict, action_counter, state, prev_state, prev_action):
     Q_prev_state = to_discrete(prev_state)
 
     if terminate_state(Q_prev_state):
-        Q_prev_state = 'End'
+        Q_prev_state = 'End State'
         QLearn_Dict[Q_prev_state] = -1
-        return 'End'
+        best_action = 'End'
+    else:
+        action_counter[Q_prev_state][prev_action] += 1
+        c = 50
+        alpha = c / (c + action_counter[Q_prev_state][prev_action])
+        gamma = 0.9
 
-    action_counter[Q_prev_state][prev_action] += 1
-    c = 50
-    alpha = c / (c + action_counter[Q_prev_state][prev_action])
-    gamma = 0.9
+        if Q_state not in QLearn_Dict:
+            QLearn_Dict[Q_state] = {'Up': 0, 'Nothing': 0, 'Down': 0}
+            action_counter[Q_state] = {'Up': 0, 'Nothing': 0, 'Down': 0}
 
-    if Q_state not in QLearn_Dict:
-        QLearn_Dict[Q_state] = {'Up': 0, 'Nothing': 0, 'Down': 0}
-        action_counter[Q_state] = {'Up': 0, 'Nothing': 0, 'Down': 0}
+        Q_prev_val = QLearn_Dict[Q_prev_state][prev_action]
+        QLearn_Dict[Q_prev_state][prev_action] = (1 - alpha) * Q_prev_val + alpha * (
+            reward_state(Q_prev_state, Q_state) + gamma * getMaxUtil(QLearn_Dict, Q_state))
 
-    Q_prev_val = QLearn_Dict[Q_prev_state][prev_action]
-
-    QLearn_Dict[Q_prev_state][prev_action] = (1 - alpha) * Q_prev_val + alpha * (
-        reward_state(Q_state, Q_prev_state) + gamma * getMaxUtil(QLearn_Dict, Q_state) )
-
-    best_action = exploration(action_counter[Q_state], QLearn_Dict[Q_state])
-    return
+        best_action = exploration(QLearn_Dict[Q_state], action_counter[Q_state])
+    return best_action
 
 
 # Exploration function uses the modified strategy discussed in the lecture slides
 def exploration(Q_action_set, counter_set):
-    threshold = 50
-    action = min(counter_set, key = counter_set.get)
+    threshold = 100
+    action = min(counter_set, key=counter_set.get)
     if counter_set[action] > threshold:
-        action = max(Q_action_set, key = Q_action_set.get)
-    return action
+        return max(Q_action_set, key=Q_action_set.get)
+    else:
+        return min(counter_set, key=counter_set.get)
 
 
 def getMaxUtil(QLearn_Dict, Q_state):
@@ -220,47 +220,47 @@ def getMaxUtil(QLearn_Dict, Q_state):
 def simulated_training(trainsession, Qlearn_Dict, action_counter):
     ### Initialize game
     u, v = random_speed()
-    init_state = (0.5, 0.5, u, v, 0.5 - 0.5 * RP_HEIGHT, 0.5 - 0.5 * LP_HEIGHT)
-    Q_ini_state = to_discrete(init_state)
+    ini_state = (0.5, 0.5, u, v, 0.5 - 0.5 * LP_HEIGHT, 0.5 - 0.5 * RP_HEIGHT)
+    # print(ini_state)
+    Q_ini_state = to_discrete(ini_state)
+    # print(Q_ini_state)
 
-    prev_state = init_state
-    Qlearn_Dict[Q_ini_state] = {'Up' : 0, 'Nothing': 0, 'Down': 0}
-    action_counter[Q_ini_state] = {'Up' : 0, 'Nothing': 0, 'Down': 0}
+    prev_state = ini_state
+    Qlearn_Dict[Q_ini_state] = {'Up': 0, 'Nothing': 0, 'Down': 0}
+    action_counter[Q_ini_state] = {'Up': 0, 'Nothing': 0, 'Down': 0}
 
     R_action = 'Up'
     L_action = 'Nothing'
-    action = (R_action, L_action)
+    action = (L_action, R_action)
     state = action_state(prev_state, action)
 
-    sum_action = 0
     sum_bounce = 0
-
+    print('Initiated')
     for i in range(trainsession):
-        averageAction = 0
         averageBounce = 0
         while True:
             R_action = Qlearning(Qlearn_Dict, action_counter, state, prev_state, R_action)
             if R_action == 'End':
-                sum_action += averageAction
                 sum_bounce += averageBounce
                 break
+
             prev_state = state
-            action = (R_action, L_action)
+            action = (L_action, R_action)
             state = action_state(state, action)
 
             if is_bounced(prev_state, state) and state[2] < 0:
                 averageBounce += 1
 
-            averageAction += 1
+        #print('Round %d: ' % i)
+        #print(averageBounce)
+        #print('\n')
+        if i % 10000 == 0:
 
-        if i == 2000 or i == 4000 or i == 6000 or i == 8000 or i == 9999:
-            print("Round %d: " % i)
-            print("\nAverage bounce after every %d: " % i, sum_bounce/i)
-            sum_action = 0
+            print("\nAverage bounce after %d: " % i, sum_bounce/10000)
             sum_bounce = 0
 
         u, v = random_speed()
-        ini_state = (0.5, 0.5, u, v, 0.5 - 0.5 * RP_HEIGHT, 0.5 - 0.5 * LP_HEIGHT)
+        ini_state = (0.5, 0.5, u, v, 0.5 - 0.5 * LP_HEIGHT, 0.5 - 0.5 * RP_HEIGHT)
         Q_ini_state = to_discrete(ini_state)
         if Q_ini_state not in Qlearn_Dict:
             Qlearn_Dict[Q_ini_state] = {'Up': 0, 'Nothing': 0, 'Down': 0}
@@ -268,10 +268,11 @@ def simulated_training(trainsession, Qlearn_Dict, action_counter):
 
         prev_state = ini_state
         R_action = exploration(Qlearn_Dict[Q_ini_state], action_counter[Q_ini_state])
-        L_action = 'Down'
-        action = (R_action, L_action)
+        L_action = l_paddle_action(prev_state)
+        action = (L_action, R_action)
         state = action_state(prev_state, action)
 
+    return 'Done'
 
 # define the movement of left paddle
 def l_paddle_action(curr_state):
@@ -284,5 +285,8 @@ def update_pos(prev_state, prev_action, state, Qlearning_dict, action_counter):
     r_action = Qlearning(Qlearning_dict, action_counter, state, prev_state, prev_action)
     if r_action == 'End':
         return 0, 0, 'End'
-    new_action = (r_action, l_paddle_action(state))
+    new_action = (l_paddle_action(state), r_action)
     return (action_state(state, new_action), state, r_action)
+
+
+

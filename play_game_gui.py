@@ -7,7 +7,7 @@ Q_Dict = dict()
 Action_Dict = dict()
 
 # Frame per second that we set up and use in the GUI
-FPS = 30
+FPS = 15
 # Color setting
 WHITE = [255, 255, 255]
 RED = (255, 0, 0)
@@ -48,18 +48,17 @@ def showTable():
     SCREEN.fill(WHITE)
     # Draw the boundary line
     pyg.draw.rect(SCREEN, BLUE, WHOLE_WINDOW, COURT_LINE)
-    pyg.display.update()
 
 
-def showBall(postion):
+def showBall(position):
     """ Function used to draw the ball on table """
-    pyg.draw.circle(SCREEN, RED, postion, RADIUS)
-    pyg.display.update()
+    pos = (int(position[0]), int(position[1]))
+    pyg.draw.circle(SCREEN, RED, pos, RADIUS)
 
 
 def getUpdateValue(state):
     # Unpackin the state tuple
-    ball_x, ball_y, velocity_x, velocity_y, right_pad_y, left_pad_y = state
+    ball_x, ball_y, velocity_x, velocity_y, left_pad_y, right_pad_y = state
     new_ball_x = (VIEW_WIDTH - RADIUS - 2*PAD_THICK - COURT_LINE) * ball_x
     new_ball_y = (VIEW_HEIGHT - RADIUS - COURT_LINE) * ball_y
     new_right_pad = right_pad_y * VIEW_HEIGHT
@@ -76,8 +75,8 @@ def displayState(state, l_pad, r_pad, round_count):
     showPaddle(r_pad, (r_pad.x, right_pad))
     showBall((ball_x, ball_y))
     # Display game status
-    text = pyg.font.Font('None', 15)
-    surface = text.render("Round #: {}", format(round_count), BLACK)
+    text = pyg.font.Font(None, 15)
+    surface = text.render('Round #: %s' % format(round_count), True, BLACK)
     textbox = surface.get_rect()
     textbox.topleft = (VIEW_WIDTH / 2, 28)
     SCREEN.blit(surface, textbox)
@@ -102,14 +101,14 @@ pc.simulated_training(TRAIN_TRAIL, Q_Dict, Action_Dict)
 # Set up the initial state after the training to start testing
 print("The training session has been completed.")
 round_count = 1
-init_state = (0.5, 0.5, 0.03, 0.01, 0.5 - (pc.RP_HEIGHT / 2), 0.5 - (pc.LP_HEIGHT / 2))
+init_state = (0.5, 0.5, 0.03, 0.01, 0.5 - (pc.LP_HEIGHT / 2), 0.5 - (pc.RP_HEIGHT / 2))
 discrete_init = pc.to_discrete(init_state)
 
 displayState(init_state, l_pad, r_pad, round_count)
 
 right_action = max(Q_Dict[discrete_init], key=Q_Dict[discrete_init].get)
 left_action = pc.l_paddle_action(init_state)
-action = (right_action, left_action)
+action = (left_action, right_action)
 state = pc.action_state(init_state, action)
 prev_state = init_state
 
@@ -131,16 +130,16 @@ while flag:
     state, prev_state, right_action = pc.update_pos(prev_state, right_action, state, Q_Dict, Action_Dict)
 
     # Check if the AI lose the game
-    if right_action == "END":
+    if right_action == "End":
         prev_state = init_state
         displayState(prev_state, l_pad, r_pad, round_count)
         round_count += 1
         right_action = max(Q_Dict[discrete_init], key=Q_Dict[discrete_init].get)
         left_action = pc.l_paddle_action(prev_state)
-        action = (right_action, left_action)
-        curr_state = pc.action_state(prev_state, action)
+        action = (left_action, right_action)
+        state = pc.action_state(prev_state, action)
         bounce_count = 0
-    if pc.is_bounced(prev_state, curr_state) and curr_state[3] < 0:
+    if pc.is_bounced(prev_state, state) and state[3] < 0:
         bounce_count += 1
         print("Paddle bounces the ball %s", format(bounce_count), " times")
 

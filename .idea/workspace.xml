@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="3a7472ff-c6fb-471b-98de-e68c4762452f" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pong_continuous.py" afterPath="$PROJECT_DIR$/pong_continuous.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pong_twoPlayers.py" afterPath="$PROJECT_DIR$/pong_twoPlayers.py" />
-    </list>
+    <list default="true" id="3a7472ff-c6fb-471b-98de-e68c4762452f" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -40,13 +36,37 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="play_2Players.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="play_2Players.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/play_2Players.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="866">
-              <caret line="149" column="25" lean-forward="true" selection-start-line="149" selection-start-column="25" selection-end-line="149" selection-end-column="25" />
+            <state relative-caret-position="752">
+              <caret line="148" column="46" lean-forward="false" selection-start-line="148" selection-start-column="46" selection-end-line="148" selection-end-column="46" />
               <folding>
                 <element signature="e#0#20#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="human_vs_ai.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/human_vs_ai.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="114">
+              <caret line="6" column="15" lean-forward="false" selection-start-line="6" selection-start-column="15" selection-end-line="6" selection-end-column="15" />
+              <folding>
+                <element signature="e#0#20#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="train_ai_for_human.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/train_ai_for_human.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="152">
+              <caret line="8" column="15" lean-forward="false" selection-start-line="8" selection-start-column="15" selection-end-line="8" selection-end-column="15" />
+              <folding>
+                <element signature="e#0#11#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -55,8 +75,8 @@
       <file leaf-file-name="pong_twoPlayers.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pong_twoPlayers.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="873">
-              <caret line="306" column="16" lean-forward="false" selection-start-line="306" selection-start-column="16" selection-end-line="306" selection-end-column="16" />
+            <state relative-caret-position="550">
+              <caret line="247" column="47" lean-forward="true" selection-start-line="247" selection-start-column="47" selection-end-line="247" selection-end-column="47" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
               </folding>
@@ -92,6 +112,7 @@
       <find>is_bounced</find>
       <find>action</find>
       <find>state[</find>
+      <find>LP</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -109,6 +130,8 @@
         <option value="$PROJECT_DIR$/dumb_player.py" />
         <option value="$PROJECT_DIR$/pong_twoPlayers.py" />
         <option value="$PROJECT_DIR$/play_2Players.py" />
+        <option value="$PROJECT_DIR$/train_ai_for_human.py" />
+        <option value="$PROJECT_DIR$/human_vs_ai.py" />
       </list>
     </option>
   </component>
@@ -172,7 +195,24 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.play_2Players">
+  <component name="RunManager" selected="Python.human_vs_ai">
+    <configuration name="human_vs_ai" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="Pong" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/human_vs_ai.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+    </configuration>
     <configuration name="play_2Players" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -241,37 +281,20 @@
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
     </configuration>
-    <configuration name="test" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="Pong" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/test.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-    </configuration>
     <list size="5">
       <item index="0" class="java.lang.String" itemvalue="Python.play_game_gui" />
-      <item index="1" class="java.lang.String" itemvalue="Python.test" />
-      <item index="2" class="java.lang.String" itemvalue="Python.pong_continuous" />
-      <item index="3" class="java.lang.String" itemvalue="Python.pong_twoPlayers" />
-      <item index="4" class="java.lang.String" itemvalue="Python.play_2Players" />
+      <item index="1" class="java.lang.String" itemvalue="Python.pong_continuous" />
+      <item index="2" class="java.lang.String" itemvalue="Python.pong_twoPlayers" />
+      <item index="3" class="java.lang.String" itemvalue="Python.play_2Players" />
+      <item index="4" class="java.lang.String" itemvalue="Python.human_vs_ai" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="Python.play_2Players" />
-        <item index="1" class="java.lang.String" itemvalue="Python.play_game_gui" />
-        <item index="2" class="java.lang.String" itemvalue="Python.pong_twoPlayers" />
-        <item index="3" class="java.lang.String" itemvalue="Python.pong_continuous" />
-        <item index="4" class="java.lang.String" itemvalue="Python.test" />
+        <item index="0" class="java.lang.String" itemvalue="Python.human_vs_ai" />
+        <item index="1" class="java.lang.String" itemvalue="Python.play_2Players" />
+        <item index="2" class="java.lang.String" itemvalue="Python.play_game_gui" />
+        <item index="3" class="java.lang.String" itemvalue="Python.pong_twoPlayers" />
+        <item index="4" class="java.lang.String" itemvalue="Python.pong_continuous" />
       </list>
     </recent_temporary>
   </component>
@@ -407,7 +430,17 @@
         <state relative-caret-position="171">
           <caret line="9" column="14" lean-forward="false" selection-start-line="9" selection-start-column="14" selection-end-line="9" selection-end-column="14" />
           <folding>
-            <element signature="e#0#11#0" expanded="true" />
+            <element signature="e#0#11#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/play_2Players.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="752">
+          <caret line="148" column="46" lean-forward="false" selection-start-line="148" selection-start-column="46" selection-end-line="148" selection-end-column="46" />
+          <folding>
+            <element signature="e#0#20#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -424,18 +457,28 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pong_twoPlayers.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="873">
-          <caret line="306" column="16" lean-forward="false" selection-start-line="306" selection-start-column="16" selection-end-line="306" selection-end-column="16" />
+        <state relative-caret-position="550">
+          <caret line="247" column="47" lean-forward="true" selection-start-line="247" selection-start-column="47" selection-end-line="247" selection-end-column="47" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/play_2Players.py">
+    <entry file="file://$PROJECT_DIR$/train_ai_for_human.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="866">
-          <caret line="149" column="25" lean-forward="true" selection-start-line="149" selection-start-column="25" selection-end-line="149" selection-end-column="25" />
+        <state relative-caret-position="152">
+          <caret line="8" column="15" lean-forward="false" selection-start-line="8" selection-start-column="15" selection-end-line="8" selection-end-column="15" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/human_vs_ai.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="114">
+          <caret line="6" column="15" lean-forward="false" selection-start-line="6" selection-start-column="15" selection-end-line="6" selection-end-column="15" />
           <folding>
             <element signature="e#0#20#0" expanded="true" />
           </folding>

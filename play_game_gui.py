@@ -3,7 +3,7 @@ import sys
 import pong_continuous as pc
 import time
 # Parameters used for training
-TRAIN_TRAIL = 200000
+TRAIN_TRAIL = 50000
 Q_Dict = dict()
 Action_Dict = dict()
 
@@ -140,7 +140,7 @@ while 1:
         action = (left_action, right_action)
         state = pc.action_state(prev_state, action)
         bounce_count = 0
-    if pc.is_bounced(prev_state, state) and state[3] < 0:
+    if pc.is_bounced(prev_state, state) and state[2] < 0:
         bounce_count += 1
         print("Paddle bounces the ball %d" % (bounce_count), " times")
 

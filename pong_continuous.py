@@ -4,8 +4,8 @@ import random
 # state = (ball_x, ball_y, velocity_x, velocity_y, l_paddle_y, r_paddle_y)
 # action = ([l_up, l_down, l_stay], [r_up, r_down, r_stay])
 
-HEIGHT = 36
-WIDTH = 36
+HEIGHT = 12
+WIDTH = 12
 LP_HEIGHT = 1
 LP_STEP = 0
 # Since there is jut a single paddle, we initialize this one as if it is a wall

@@ -96,8 +96,10 @@ left_pad_y = (VIEW_HEIGHT - L_PAD_LEN) / 2
 l_pad = pyg.Rect(left_pad_x, left_pad_y, PAD_THICK, L_PAD_LEN)
 
 # Start Training
+start_t = time.clock()      # Start recording training time
 print("Start the training session, current set training trails: ", TRAIN_TRAIL, " times")
 pc.simulated_training(TRAIN_TRAIL, Q_Dict, Action_Dict)
+print("Time Spent: %.2f" % (time.clock() - start_t))
 
 # Set up the initial state after the training to start testing
 print("The training session has been completed.")
@@ -113,11 +115,10 @@ action = (left_action, right_action)
 state = pc.action_state(init_state, action)
 prev_state = init_state
 
-flag = True
+bounce_count = 0
 
 # Start looping this game
-start_t = time.clock()
-while flag:
+while 1:
     # Make sure that the user doesn't want to quit
     for event in pyg.event.get():
         if event.type == pyg.QUIT:
@@ -126,8 +127,6 @@ while flag:
 
     # Update the display
     displayState(state, l_pad, r_pad, round_count)
-
-    bounce_count = 0
 
     state, prev_state, right_action = pc.update_pos(prev_state, right_action, state, Q_Dict, Action_Dict)
 
@@ -147,5 +146,3 @@ while flag:
 
     pyg.display.update()
     clock.tick(FPS)
-
-print("Time Spent: %.2f" % (time.clock() - start_t))

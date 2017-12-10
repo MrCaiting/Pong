@@ -195,13 +195,14 @@ def Qlearning(QLearn_Dict, action_counter, state, prev_state, prev_action):
         Q_prev_val = QLearn_Dict[Q_prev_state][prev_action]
         QLearn_Dict[Q_prev_state][prev_action] = (1 - alpha) * Q_prev_val + alpha * (
             reward_state(Q_prev_state, Q_state) + gamma * getMaxUtil(QLearn_Dict, Q_state))
+
         best_action = exploration(QLearn_Dict[Q_state], action_counter[Q_state])
     return best_action
 
 
 # Exploration function uses the modified strategy discussed in the lecture slides
 def exploration(Q_action_set, counter_set):
-    threshold = 10
+    threshold = 100
     action = min(counter_set, key=counter_set.get)
     if counter_set[action] > threshold:
         return max(Q_action_set, key=Q_action_set.get)
@@ -219,7 +220,7 @@ def getMaxUtil(QLearn_Dict, Q_state):
 def simulated_training(trainsession, Qlearn_Dict, action_counter):
     ### Initialize game
     u, v = random_speed()
-    ini_state = (0.5, 0.5, u, v, 0.5 - 0.5 * LP_HEIGHT, 0.5 - 0.5 * RP_HEIGHT)
+    ini_state = (0.5, 0.5, u, v, 0.5 - 0.5 * RP_HEIGHT, 0.5 - 0.5 * LP_HEIGHT)
     # print(ini_state)
     Q_ini_state = to_discrete(ini_state)
     # print(Q_ini_state)
@@ -253,13 +254,13 @@ def simulated_training(trainsession, Qlearn_Dict, action_counter):
         #print('Round %d: ' % i)
         #print(averageBounce)
         #print('\n')
-        if (i+1) % 10000 == 0:
+        if i % 10000 == 0:
 
             print("\nAverage bounce after %d: " % i, sum_bounce/10000)
             sum_bounce = 0
 
         u, v = random_speed()
-        ini_state = (0.5, 0.5, u, v, 0.5 - 0.5 * LP_HEIGHT, 0.5 - 0.5 * RP_HEIGHT)
+        ini_state = (0.5, 0.5, u, v, 0.5 - 0.5 * RP_HEIGHT, 0.5 - 0.5 * LP_HEIGHT)
         Q_ini_state = to_discrete(ini_state)
         if Q_ini_state not in Qlearn_Dict:
             Qlearn_Dict[Q_ini_state] = {'Up': 0, 'Nothing': 0, 'Down': 0}
@@ -267,7 +268,7 @@ def simulated_training(trainsession, Qlearn_Dict, action_counter):
 
         prev_state = ini_state
         R_action = exploration(Qlearn_Dict[Q_ini_state], action_counter[Q_ini_state])
-        L_action = l_paddle_action(prev_state)
+        L_action = 'Down'
         action = (L_action, R_action)
         state = action_state(prev_state, action)
 

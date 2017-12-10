@@ -1,8 +1,9 @@
 import pygame as pyg
 import sys
 import pong_continuous as pc
+import time
 # Parameters used for training
-TRAIN_TRAIL = 1000000
+TRAIN_TRAIL = 200000
 Q_Dict = dict()
 Action_Dict = dict()
 
@@ -115,6 +116,7 @@ prev_state = init_state
 flag = True
 
 # Start looping this game
+start_t = time.clock()
 while flag:
     # Make sure that the user doesn't want to quit
     for event in pyg.event.get():
@@ -145,3 +147,5 @@ while flag:
 
     pyg.display.update()
     clock.tick(FPS)
+
+print("Time Spent: %.2f" % (time.clock() - start_t))

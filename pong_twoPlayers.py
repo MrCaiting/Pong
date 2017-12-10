@@ -4,18 +4,28 @@ import random
 # state = (ball_x, ball_y, velocity_x, velocity_y, l_paddle_y, r_paddle_y)
 # action = ([l_up, l_down, l_stay], [r_up, r_down, r_stay])
 
+# Often modified constants
+REPORT_TRAIL = 10000
+
+# Table Siz
 HEIGHT = 12
 WIDTH = 12
-LP_HEIGHT = 1
-LP_STEP = 0
-# Since there is jut a single paddle, we initialize this one as if it is a wall
-RP_HEIGHT = 0.2
-RP_STEP = 0.04
 LEFT_BOUND = 0
 RIGHT_BOUND = 1
+
+# Left paddle values (Use the undefeated wall as competitor)
+LP_HEIGHT = 1
+LP_STEP = 0
+
+# Right paddle values
+RP_HEIGHT = 0.2
+RP_STEP = 0.04
+
+# Velocity values
 DIS_V_X = 1
 DIS_V_Y = 1
 V_Y_UP_BOUND = 0.015
+
 
 # helper function to detect bounce
 def is_bounced(prev_state, curr_state):
@@ -31,7 +41,6 @@ def is_bounced(prev_state, curr_state):
         if curr_state[2] > 0:
             return True
     return False
-
 
 
 # declare reward state
@@ -218,7 +227,7 @@ def getMaxUtil(QLearn_Dict, Q_state):
 
 
 def simulated_training(trainsession, Qlearn_Dict, action_counter):
-    ### Initialize game
+    # Initialize game
     u, v = random_speed()
     ini_state = (0.5, 0.5, u, v, 0.5 - 0.5 * LP_HEIGHT, 0.5 - 0.5 * RP_HEIGHT)
     prev_state = ini_state
@@ -233,8 +242,9 @@ def simulated_training(trainsession, Qlearn_Dict, action_counter):
     state = action_state(prev_state, action)
 
     sum_bounce_r = 0
-    sum_bounce_l = 0
-    rightwin = 0
+    # sum_bounce_l = 0
+    # Deleted
+    # rightwin = 0
     print('Initiated')
     for i in range(trainsession):
         averageBounce_r = 0
@@ -242,11 +252,16 @@ def simulated_training(trainsession, Qlearn_Dict, action_counter):
         while True:
             R_action = Qlearning(Qlearn_Dict, action_counter, state, prev_state, R_action)
             if R_action == 'End':
-                # if in termination state, and ball x position is on the left bound side, right paddle wins
+                # Some parts of the following are useless here beacause
+                #   they are update parameters that we do not need anymore
+                """
+                # if in termination state, and ball x position is on the
+                #   left bound side, right paddle wins
                 if prev_state[0] < 0.2:
                     rightwin += 1
+                """
                 sum_bounce_r += averageBounce_r
-                sum_bounce_l += averageBounce_l
+                # sum_bounce_l += averageBounce_l
                 break
 
             prev_state = state
@@ -259,14 +274,12 @@ def simulated_training(trainsession, Qlearn_Dict, action_counter):
             if is_bounced(prev_state, state) and state[2] > 0:
                 averageBounce_l += 1
 
-        if (i+1) % 10000 == 0:
+        """ Quite useless for this part, but keep it for special occasions
+        """
+        if (i+1) % REPORT_TRAIL == 0:
 
-            print("\nAverage bounces for right paddle (per 10000) after %d trails: " % (i+1), sum_bounce_r/10000)
-            print("\nAverage bounces for left paddle(per 10000) after %d trails: " % (i+1), sum_bounce_l / 10000)
-            print("\nRight Paddle Wining Rate after %d trails: " % (i+1), (rightwin/100), "%")
+            print("\nAverage bounces for right paddle (per 10000) after %d trails: " % (i+1), sum_bounce_r/REPORT_TRAIL)
             sum_bounce_r = 0
-            sum_bounce_l = 0
-            rightwin = 0
 
         u, v = random_speed()
         ini_state = (0.5, 0.5, u, v, 0.5 - 0.5 * LP_HEIGHT, 0.5 - 0.5 * RP_HEIGHT)

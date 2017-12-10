@@ -8,8 +8,13 @@ TRAIN_TRAIL = 50000
 Q_Dict = dict()
 Action_Dict = dict()
 
-# Frame per second that we set up and use in the GUI
-FPS = 15
+# For displaying wins
+RIGHT = 1
+LEFT = 0
+
+# Frame per second that we use in the GUI (Changed to higer value to increase overall speed)
+FPS = 30
+
 # Color setting
 WHITE = [255, 255, 255]
 RED = (255, 0, 0)
@@ -77,11 +82,20 @@ def displayState(state, l_pad, r_pad, round_count):
     showPaddle(r_pad, (r_pad.x, right_pad))
     showBall((ball_x, ball_y))
     # Display game status
-    text = pyg.font.Font(None, 15)
+    text = pyg.font.Font(None, 20)
     surface = text.render('Round #: %s' % format(round_count), True, BLACK)
     textbox = surface.get_rect()
-    textbox.topleft = (VIEW_WIDTH / 2, 28)
+    textbox.midtop = (VIEW_WIDTH/2, 0)
     SCREEN.blit(surface, textbox)
+
+
+def displayWins(wins0, wins1, round_count):
+    ratio1 = float(wins1/round_count) * 100
+    ratio0 = float(wins0/round_count) * 100
+    sys.stdout.write('Right Wins : %d Rounds so far, Accumulated Winning Rate: %.2f%%\n'
+                     % (wins0, ratio0))
+    sys.stdout.write('Left Wins : %d Rounds so far, Accumulated Winning Rate: %.2f%%\n\n'
+                     % (wins1, ratio1))
 
 
 clock = pyg.time.Clock()
@@ -116,7 +130,9 @@ action = (left_action, right_action)
 state = pc.action_state(init_state, action)
 prev_state = init_state
 
-bounce_count = 0
+# Set up some useful counter
+right_win = 0
+left_win = 0
 
 # Start looping this game
 while 1:
@@ -133,11 +149,16 @@ while 1:
 
     # Check if the AI lose the game
     if right_action == "End":
-        # who wins?
+        # who wins? Here is the right side wins
         if prev_state[0] < 0.2:
-            print("Right Paddle Wins")
+            right_win += 1
+
+        # If the left has it
         elif prev_state[0] > 0.8:
-            print("Left Paddle Wins")
+            left_win += 1
+
+        displayWins(right_win, left_win, round_count)
+
         prev_state = init_state
         displayState(prev_state, l_pad, r_pad, round_count)
         round_count += 1
@@ -145,10 +166,12 @@ while 1:
         left_action = pc.l_paddle_action(prev_state)
         action = (left_action, right_action)
         state = pc.action_state(prev_state, action)
-        bounce_count = 0
+        # bounce_count = 0
+
+    """ Not really necessary here
     if pc.is_bounced(prev_state, state) and state[2] < 0:
         bounce_count += 1
         print("Paddle bounces the ball %d" % (bounce_count), " times")
-
+    """
     pyg.display.update()
     clock.tick(FPS)

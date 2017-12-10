@@ -255,7 +255,7 @@ def simulated_training(trainsession, Qlearn_Dict, action_counter):
         #print('\n')
         if (i+1) % 10000 == 0:
 
-            print("\nAverage bounce after %d: " % i, sum_bounce/10000)
+            print("\nAverage bounces (per 10000) after %d trails: " % i, sum_bounce/10000)
             sum_bounce = 0
 
         u, v = random_speed()
@@ -286,6 +286,3 @@ def update_pos(prev_state, prev_action, state, Qlearning_dict, action_counter):
         return 0, 0, 'End'
     new_action = (l_paddle_action(state), r_action)
     return (action_state(state, new_action), state, r_action)
-
-
-

@@ -142,7 +142,7 @@ while 1:
         bounce_count = 0
     if pc.is_bounced(prev_state, state) and state[3] < 0:
         bounce_count += 1
-        print("Paddle bounces the ball %s", format(bounce_count), " times")
+        print("Paddle bounces the ball %d" % (bounce_count), " times")
 
     pyg.display.update()
     clock.tick(FPS)

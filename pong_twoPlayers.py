@@ -4,10 +4,10 @@ import random
 # state = (ball_x, ball_y, velocity_x, velocity_y, l_paddle_y, r_paddle_y)
 # action = ([l_up, l_down, l_stay], [r_up, r_down, r_stay])
 
-HEIGHT = 36
-WIDTH = 36
-LP_HEIGHT = 1
-LP_STEP = 0
+HEIGHT = 12
+WIDTH = 12
+LP_HEIGHT = 0.2
+LP_STEP = 0.04
 # Since there is jut a single paddle, we initialize this one as if it is a wall
 RP_HEIGHT = 0.2
 RP_STEP = 0.04
@@ -287,6 +287,3 @@ def update_pos(prev_state, prev_action, state, Qlearning_dict, action_counter):
         return 0, 0, 'End'
     new_action = (l_paddle_action(state), r_action)
     return (action_state(state, new_action), state, r_action)
-
-
-

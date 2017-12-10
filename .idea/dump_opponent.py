@@ -6,8 +6,8 @@ import random
 
 HEIGHT = 12
 WIDTH = 12
-LP_HEIGHT = 1
-LP_STEP = 0
+LP_HEIGHT = 0.2
+LP_STEP = 0.02
 # Since there is jut a single paddle, we initialize this one as if it is a wall
 RP_HEIGHT = 0.2
 RP_STEP = 0.04
@@ -38,25 +38,24 @@ def is_bounced(prev_state, curr_state):
 def reward_state(prev_state, curr_state):
     # get curr state info
     ball_x, ball_y, velocity_x, velocity_y, l_paddle_y, r_paddle_y = curr_state
-    # initialize reward value
-    reward = 0
+
     # if the ball is already bounced, reward = 1
     if is_bounced(prev_state, curr_state) and velocity_x < 0:
-        reward = 1
+        return 0
     else:
         # else we lose but there are two cases
         # if ball x position is already out of bound
-        if ball_x > 1:
+        if ball_x > RIGHT_BOUND:
             # and check if the ball y position is in the fit of paddle
             if r_paddle_y > ball_y or ball_y > r_paddle_y + RP_HEIGHT:
                 # this means the ball is outside our range
-                reward = -1
+                return -1
         # for the left paddle, this is the same condition
-        if ball_x < 0:
+        if ball_x < LEFT_BOUND:
             if l_paddle_y > ball_y or ball_y > l_paddle_y + LP_HEIGHT:
-                reward = 0
+                return 1
 
-    return reward
+    return 0
 
 
 # declare action state
@@ -101,20 +100,22 @@ def action_state(curr_state, action):
         ball_y_new = -ball_y_new
         velocity_y = -velocity_y
     # check x position with discretized value
-    if dis_ball_x > RIGHT_BOUND:
+    if dis_ball_x > 1:
         U = random.uniform(-0.015, 0.015)
         V = random.uniform(-0.03, 0.03)
         if r_paddle_y_new <= ball_y_new and ball_y_new <= (r_paddle_y_new + RP_HEIGHT):
-            ball_x_new = 2 * RIGHT_BOUND - ball_x_new
+            ball_x_new = 2 - ball_x_new
             # make sure x speed won't exceed 0.03
             velocity_x = min(-0.03, -velocity_x + U)
             velocity_y += V
     # for the left paddle
-    if dis_ball_x < LEFT_BOUND:
+    if dis_ball_x < 0:
+        U = random.uniform(-0.015, 0.015)
+        V = random.uniform(-0.03, 0.03)
         if l_paddle_y_new <= ball_y_new and ball_y_new <= (l_paddle_y_new + LP_HEIGHT):
             ball_x_new = -ball_x_new
-            velocity_x = max(0.03, -velocity_x)
-            velocity_y = velocity_y
+            velocity_x = max(0.03, -velocity_x + U)
+            velocity_y += V
 
     return (ball_x_new, ball_y_new, velocity_x, velocity_y, l_paddle_y_new, r_paddle_y_new)
 
@@ -138,8 +139,8 @@ def terminate_state(state):
 # we need to convert the continuous game state into discrete
 def to_discrete(curr_state):
     ball_x, ball_y, velocity_x, velocity_y, l_paddle_y, r_paddle_y = curr_state
-    ball_x = math.floor(WIDTH * ball_x) /WIDTH
-    ball_y = math.floor(HEIGHT * ball_y) /HEIGHT
+    ball_x = math.floor(WIDTH * ball_x) / WIDTH
+    ball_y = math.floor(HEIGHT * ball_y) / HEIGHT
     # set the speed to discretized speed
     vx_new = DIS_V_X
     vy_new = DIS_V_Y
@@ -159,7 +160,7 @@ def to_discrete(curr_state):
         l_paddle_y_new = l_paddle_y
     else:
         l_paddle_y_new = math.floor(l_paddle_y*HEIGHT/(1-LP_HEIGHT)) / HEIGHT
-
+    l_paddle_y_new = 0
     return (ball_x, ball_y, vx_new, vy_new, l_paddle_y_new, r_paddle_y_new)
 
 
@@ -220,43 +221,52 @@ def simulated_training(trainsession, Qlearn_Dict, action_counter):
     ### Initialize game
     u, v = random_speed()
     ini_state = (0.5, 0.5, u, v, 0.5 - 0.5 * LP_HEIGHT, 0.5 - 0.5 * RP_HEIGHT)
+    prev_state = ini_state
     # print(ini_state)
     Q_ini_state = to_discrete(ini_state)
     # print(Q_ini_state)
-
-    prev_state = ini_state
     Qlearn_Dict[Q_ini_state] = {'Up': 0, 'Nothing': 0, 'Down': 0}
     action_counter[Q_ini_state] = {'Up': 0, 'Nothing': 0, 'Down': 0}
 
     R_action = 'Up'
-    L_action = 'Nothing'
-    action = (L_action, R_action)
+    action = (l_paddle_action(prev_state), R_action)
     state = action_state(prev_state, action)
 
-    sum_bounce = 0
+    sum_bounce_r = 0
+    sum_bounce_l = 0
+    rightwin = 0
     print('Initiated')
     for i in range(trainsession):
-        averageBounce = 0
+        averageBounce_r = 0
+        averageBounce_l = 0
         while True:
             R_action = Qlearning(Qlearn_Dict, action_counter, state, prev_state, R_action)
             if R_action == 'End':
-                sum_bounce += averageBounce
+                # if in termination state, and ball x position is on the left bound side, right paddle wins
+                if prev_state[0] < 0.2:
+                    rightwin += 1
+                sum_bounce_r += averageBounce_r
+                sum_bounce_l += averageBounce_l
                 break
 
             prev_state = state
-            action = (L_action, R_action)
-            state = action_state(state, action)
+
+            action = (l_paddle_action(prev_state), R_action)
+            state = action_state(prev_state, action)
 
             if is_bounced(prev_state, state) and state[2] < 0:
-                averageBounce += 1
+                averageBounce_r += 1
+            if is_bounced(prev_state, state) and state[2] > 0:
+                averageBounce_l += 1
 
-        #print('Round %d: ' % i)
-        #print(averageBounce)
-        #print('\n')
         if (i+1) % 10000 == 0:
 
-            print("\nAverage bounces (per 10000) after %d trails: " % i, sum_bounce/10000)
-            sum_bounce = 0
+            print("\nAverage bounces for right paddle (per 10000) after %d trails: " % (i+1), sum_bounce_r/10000)
+            print("\nAverage bounces for left paddle(per 10000) after %d trails: " % (i+1), sum_bounce_l / 10000)
+            print("\nRight Paddle Wining Rate after %d trails: " % (i+1), (rightwin/100), "%")
+            sum_bounce_r = 0
+            sum_bounce_l = 0
+            rightwin = 0
 
         u, v = random_speed()
         ini_state = (0.5, 0.5, u, v, 0.5 - 0.5 * LP_HEIGHT, 0.5 - 0.5 * RP_HEIGHT)
@@ -273,16 +283,25 @@ def simulated_training(trainsession, Qlearn_Dict, action_counter):
 
     return 'Done'
 
-# define the movement of left paddle
-def l_paddle_action(curr_state):
-    action = 'Up'
-    return action
 
-
+# modified for 2 players
 # return position to the game window for update
 def update_pos(prev_state, prev_action, state, Qlearning_dict, action_counter):
     r_action = Qlearning(Qlearning_dict, action_counter, state, prev_state, prev_action)
     if r_action == 'End':
-        return 0, 0, 'End'
+        return state, prev_state, 'End'
     new_action = (l_paddle_action(state), r_action)
     return (action_state(state, new_action), state, r_action)
+
+
+# Updated for 2.2 left paddle hardcoded motion
+# define the movement of left paddle
+def l_paddle_action(curr_state):
+    _, ball_y, _, _, l_pad_y, _ = curr_state
+    if ball_y > l_pad_y + LP_HEIGHT * (3/4):
+        action = 'Down'
+    elif l_pad_y + LP_HEIGHT * (1/4) <= ball_y <= l_pad_y + LP_HEIGHT * (3/4):
+        action = 'Nothing'
+    else:
+        action = 'Up'
+    return action

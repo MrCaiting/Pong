@@ -184,9 +184,9 @@ def Qlearning(QLearn_Dict, action_counter, state, prev_state, prev_action):
         best_action = 'End'
     else:
         action_counter[Q_prev_state][prev_action] += 1
-        c = 50
+        c = 25
         alpha = c / (c + action_counter[Q_prev_state][prev_action])
-        gamma = 0.9
+        gamma = 0.95
 
         if Q_state not in QLearn_Dict:
             QLearn_Dict[Q_state] = {'Up': 0, 'Nothing': 0, 'Down': 0}
@@ -201,7 +201,7 @@ def Qlearning(QLearn_Dict, action_counter, state, prev_state, prev_action):
 
 # Exploration function uses the modified strategy discussed in the lecture slides
 def exploration(Q_action_set, counter_set):
-    threshold = 10
+    threshold = 50
     action = min(counter_set, key=counter_set.get)
     if counter_set[action] > threshold:
         return max(Q_action_set, key=Q_action_set.get)
